@@ -146,10 +146,10 @@ class Window(QMainWindow):
 
         plot_button = QPushButton("Display",self)
         plot_button.setGeometry(700,360,150,30)
-#        plot_button.clicked.connect(self.plot('diffmap_2D_psi_1_2_psi_1_colored.jpg'))
+        plot_button.clicked.connect(self.plot)
         plot_button.show()
     
-    def plot(self,Q):
+    def plot(self):
         self.w = AnotherWindow()
         self.w.show()
 #            w.label = QLabel(self)
@@ -162,10 +162,11 @@ class AnotherWindow(QWidget):
     This "window" is a QWidget. If it has no parent, it
     will appear as a free-floating window as we want.
     """
-    def __init__(self,a):
+    def __init__(self):
         super().__init__()
+        self.label = QLabel(self)
         layout = QVBoxLayout()
-        pixmap = QPixmap(a)
+        pixmap = QPixmap('diffmap_2D_psi_1_2_psi_1_colored.jpg')
         self.label.setPixmap(pixmap)
 
         layout.addWidget(self.label)
