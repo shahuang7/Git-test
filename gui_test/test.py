@@ -123,9 +123,16 @@ class Window(QMainWindow):
         write_h5(yRow_yCol_yVal_file,yCol_symm,'yCol')
         write_h5(yRow_yCol_yVal_file,yVal_symm,'yVal')
 
+        label = QLabel("sqDist Done",self)
+        label.setGeometry(500,140,100,30)
+        label.show()
+
         from ferguson import analyze as fer_ana
 
         sigma_opt,_ = fer_ana(yRow_yCol_yVal_file)
+        label = QLabel("Ferguson Analysis Done",self)
+        label.setGeometry(500,180,200,30)
+        label.show()
 
         from diffmap import analyze as diff_ana
         from diffmap import plot2D
@@ -133,16 +140,15 @@ class Window(QMainWindow):
         h5_eigVec_eigVal = diff_ana(yRow_yCol_yVal_file,sigma,nEigs,alpha)
         eigVec = read_h5(h5_eigVec_eigVal,'eigVec')
      
+        label = QLabel("Diffuion map analysis Done",self)
+        label.setGeometry(500,220,200,30)
+        label.show() 
 
         for j in [1]:
   # colored based on \psi_j
             write_h5('colorcode.h5',eigVec[:,j]/eigVec[:,0],'colorcode')
             figure_name = plot2D(h5_eigVec_eigVal,[1,2],s=20)
             os.rename(figure_name,'diffmap_2D_psi_1_2_psi_{}_colored.jpg'.format(j))
-
-        label = QLabel("Done",self)
-        label.setGeometry(500,180,100,30)
-        label.show()
 
         plot_button = QPushButton("Display",self)
         plot_button.setGeometry(700,360,150,30)

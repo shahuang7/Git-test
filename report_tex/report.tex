@@ -1,0 +1,63 @@
+\documentclass{article}
+\input{structure.tex} 
+\usepackage{changepage}
+\usepackage{soul}
+\title{Weekly Report} % Title of the assignment
+
+\author{Shanghui Huang} % Author name and email address
+
+\date{\today} % University, school and/or department name(s) and a date
+\begin{document}
+\maketitle
+
+\section*{Testing CXFEL Code with Multiple Dataset}
+\subsection*{2BUK Imaging - Done}
+Calculated squared distances between snapshots and projected onto diffusion map manifolds.
+
+\subsection*{CroV Imaging - Done}
+\noindent Applied mask and down sampled the raw data.
+
+\noindent Calculated squared distances between snapshots and projected onto diffusion map manifolds.
+
+\noindent Resorted along with the increasing order of first eigen values.
+
+\noindent Using SnA method to calculate squared distance and dot product to get ATA.
+
+\noindent Reconstructed two modes of topos and chronos.
+
+\noindent Tested above process in both single node and MPI.
+
+\noindent \textcolor{red}{Need to double check the results, i.e. chronos, to make this a benchmark to evaluate further test in the future}
+
+\subsection*{PYP Crystallography - Ongoing}
+Using SnA method to caluclate squared distance
+
+Read raw data into an NxD matrix - Done
+
+Using SnA or SnA MPI function to write square or pipe block files - Done
+
+\begin{adjustwidth}{\parindent}{}
+Concatenate pipe files - Errors: Using numpy to initiate a 70Kx70K 2D array exceeds memory limits. Trying float16 datatype when Mortimer is back to normal.
+\end{adjustwidth}
+
+\textcolor{red}{\st{Change data types can reduce size by $4$ at most, from double to half.}}
+
+\textcolor{red}{\st{Cut whole sqDist distance before sparcify can work, tested with loop and CroV dataset.}}
+
+\textcolor{red}{\st{Mortimer is back! But some environments has changed, still learning like how to activate conda, install VScode etc.}}
+
+
+\noindent Using SnA method to calculate dot product
+
+\noindent Find ATA and extract chronos
+
+\noindent With octave calling all python libraries, the code can run without bugs, but the result chrono seems off. Need to look into the transition between matlab and python code.
+
+\subsection*{GUI design - Ongoing}
+\textcolor{red}{A first version of quick and dirty GUI is done for diffusion map, details are going to be discussed.}
+
+\section*{Research Projects with Existing Code}
+\subsection*{Data Incompleteness/Partiallity with NLSA Method}
+Ongoing
+
+\end{document}
