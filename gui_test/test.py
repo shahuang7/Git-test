@@ -137,18 +137,27 @@ class Window(QMainWindow):
         from diffmap import analyze as diff_ana
         from diffmap import plot2D
         sigma = sigma_factor*sigma_opt
-        h5_eigVec_eigVal = diff_ana(yRow_yCol_yVal_file,sigma,nEigs,alpha)
-        eigVec = read_h5(h5_eigVec_eigVal,'eigVec')
+        self.h5_eigVec_eigVal = diff_ana(yRow_yCol_yVal_file,sigma,nEigs,alpha)
+        
      
         label = QLabel("Diffuion map analysis Done",self)
         label.setGeometry(500,220,200,30)
         label.show() 
 
-        for j in [1]:
+        self.line_eigv1 = QLineEdit("",self)
+        self.line_eigv1.setGeometry(500,325,40,25)
+        self.line_eigv1.show()
+        self.parameter_box("Eigen Vector Index: ",360,320,130,30)
+        self.line_eigv2 = QLineEdit("",self)
+        self.line_eigv2.setGeometry(500,365,40,25)
+        self.line_eigv2.show()
+        self.parameter_box("Eigen Vector Index: ",360,360,130,30)
+
+#        for j in [1]:
   # colored based on \psi_j
-            write_h5('colorcode.h5',eigVec[:,j]/eigVec[:,0],'colorcode')
-            figure_name = plot2D(h5_eigVec_eigVal,[1,2],s=20)
-            os.rename(figure_name,'diffmap_2D_psi_1_2_psi_{}_colored.jpg'.format(j))
+#            write_h5('colorcode.h5',eigVec[:,j]/eigVec[:,0],'colorcode')
+#            figure_name = plot2D(h5_eigVec_eigVal,[1,2],s=20)
+#            os.rename(figure_name,'diffmap_2D_psi_1_2_psi_{}_colored.jpg'.format(j))
 
         plot_button = QPushButton("Display",self)
         plot_button.setGeometry(700,360,150,30)
@@ -156,6 +165,22 @@ class Window(QMainWindow):
         plot_button.show()
     
     def plot(self):
+        eigVec = read_h5(self.h5_eigVec_eigVal,'eigVec')
+        ev1 = int(self.line_eigv1.text())
+        ev2 = int(self.line_eigv2.text())
+        x = eigVec[:,ev1]/eigVec[:,0]
+        y = eigVec[:,ev2]/eigVec[:,0]
+        import matplotlib.pyplot as plt
+        fig,ax1 = plt.subplots(1,1)
+        fig.set_size_inches(8,4)
+        sc1 = ax1.scatter(x,y,c='k',s=5)
+        my_xlabel = '$\Psi_'+str(ev1)+'$'
+        my_ylabel = '$\Psi_'+str(ev2)+'$'
+        ax1.set_xlabel(my_xlabel,fontsize=15)
+        ax1.set_ylabel(my_ylabel,fontsize=15)
+        ax1.set_aspect('equal','box')
+        figure_name = 'diffmap_2D.jpg'
+        plt.savefig(figure_name,bbox_inches='tight')
         self.w = AnotherWindow()
         self.w.show()
 #            w.label = QLabel(self)
@@ -172,7 +197,7 @@ class AnotherWindow(QWidget):
         super().__init__()
         self.label = QLabel(self)
         layout = QVBoxLayout()
-        pixmap = QPixmap('diffmap_2D_psi_1_2_psi_1_colored.jpg')
+        pixmap = QPixmap('diffmap_2D.jpg')
         self.label.setPixmap(pixmap)
 
         layout.addWidget(self.label)
