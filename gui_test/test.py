@@ -24,18 +24,24 @@ class Window(QMainWindow):
         self.file_path = None
         # calling method 
         self.LoadFile()
-        self.parameter_box("Variable Name:",10,50,110,30)
-        self.parameter_box("h5",10,90,40,30)
+#        self.checkbox_h5 = QCheckBox(self)
+#        self.checkbox_h5.setGeometry(160,90,60,30)
+#        self.h5 = self.checkbox_h5.isChecked()
+
+#        self.parameter_box("Variable Name:",10,50,110,30)
+#        self.parameter_box("h5",10,90,40,30)
         self.parameter_box("Transpose",10,130,100,30)
         self.parameter_box("Nearest Neighbour:",10,170,140,30)
         self.parameter_box("Sigma Factor:",10,210,110,30)
         self.parameter_box("nEigs:",10,250,60,30)
-        self.line1 = QLineEdit("",self)
-        self.line1.setGeometry(160,50,60,30)
-        self.line2 = QLineEdit("",self)
-        self.line2.setGeometry(160,90,60,30)
-        self.line3 = QLineEdit("",self)
-        self.line3.setGeometry(160,130,60,30)
+
+#        self.checkbox_h5.stateChanged.connect(self.check_h5)
+#        self.line2 = QLineEdit("",self)
+        self.checkbox_transpose = QCheckBox(self)
+        self.checkbox_transpose.setGeometry(160,130,60,30)
+#        self.checkbox_transpose.stateChanged.connect(self.check_transpose)
+#        self.line3 = QLineEdit("",self)
+#        self.line3.setGeometry(160,130,60,30)
         self.line4 = QLineEdit("",self)
         self.line4.setGeometry(160,170,60,30)
         self.line5 = QLineEdit("",self)
@@ -59,12 +65,43 @@ class Window(QMainWindow):
             print('Data file ' + fileName + ' is selected')
             self.popup_text(fileName,170,10,300,30)
             self.file_path = fileName
+            self.parameter_box("h5",10,50,40,30)
+            self.parameter_box("Variable Name:",10,90,110,30)
+            self.checkbox_h5 = QCheckBox(self)
+            self.checkbox_h5.setGeometry(160,50,60,30)
+            self.checkbox_h5.show()
+            if self.checkbox_h5.isChecked():
+                import h5py
+                import numpy as np
+                f = h5py.File(self.file_path,'r')
+                self.v_list = list(f.keys())
+            else:
+                from scipy.io import loadmat
+                f = loadmat(str(self.file_path))
+                self.v_list = list(f.keys()) 
+            self.line1 = QComboBox(self)
+            self.line1.setGeometry(160,90,120,30)
+            self.line1.addItems(self.v_list[::-1])
+            self.line1.show()             
+
 
     def LoadFile(self):
         button_load= QPushButton("Open Data File", self)
         button_load.setGeometry(10,10,150,30)
         button_load.clicked.connect(self.open_dialog)
-#       
+       
+    def get_variable_names(self):
+        if self.h5:
+            import h5py
+            import numpy as np
+            f = h5py.File(self.file_path,'r')
+            self.v_list = list(f.keys())
+        else:
+            from scipy.io import loadmat
+            f = loadmat(str(self.file_path))
+            self.v_list = list(f.keys()) 
+
+
     def popup_text(self,a,x,y,w,h):
         line_file = QLineEdit(a,self)
         line_file.setGeometry(x,y,w,h)
@@ -92,13 +129,20 @@ class Window(QMainWindow):
         
     def click_save(self):
 ##            global v_name,nN,sigfac
-        self.v_name = str(self.line1.text())
-        self.h5 = bool(self.line2.text())
-        self.transpose = bool(self.line3.text())
+#        self.v_name = str(self.line1.text())
+        self.h5 = self.checkbox_h5.isChecked()
+        self.transpose = self.checkbox_transpose.isChecked()
         self.nN = int(self.line4.text())
         self.sigfac = float(self.line5.text())
         self.nEigs = int(self.line6.text()) 
+        self.v_name = self.line1.currentText()  
 #        print(self.v_name,self.nN,self.sigfac,self.file_path)
+
+#    def check_h5(self,checked):
+#        if checked:
+#            self.h5 = True
+#        else: 
+#            self.h5 = False
 
     def run_button(self):
         button = QPushButton("Run",self)
