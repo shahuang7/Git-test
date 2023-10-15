@@ -66,23 +66,28 @@ class Window(QMainWindow):
             self.popup_text(fileName,170,10,300,30)
             self.file_path = fileName
             self.parameter_box("h5",10,50,40,30)
-            self.parameter_box("Variable Name:",10,90,110,30)
+            self.button_variable=QPushButton("Variable Name:",self)
+            self.button_variable.setGeometry(10,90,110,30)
+            self.button_variable.clicked.connect(self.pulldown_v)
+            self.button_variable.show()
             self.checkbox_h5 = QCheckBox(self)
             self.checkbox_h5.setGeometry(160,50,60,30)
             self.checkbox_h5.show()
-            if self.checkbox_h5.isChecked():
-                import h5py
-                import numpy as np
-                f = h5py.File(self.file_path,'r')
-                self.v_list = list(f.keys())
-            else:
-                from scipy.io import loadmat
-                f = loadmat(str(self.file_path))
-                self.v_list = list(f.keys()) 
-            self.line1 = QComboBox(self)
-            self.line1.setGeometry(160,90,120,30)
-            self.line1.addItems(self.v_list[::-1])
-            self.line1.show()             
+    
+    def pulldown_v(self):
+        if self.checkbox_h5.isChecked():
+            import h5py
+            import numpy as np
+            f = h5py.File(self.file_path,'r')
+            self.v_list = list(f.keys())
+        else:
+            from scipy.io import loadmat
+            f = loadmat(str(self.file_path))
+            self.v_list = list(f.keys()) 
+        self.line1 = QComboBox(self)
+        self.line1.setGeometry(160,90,120,30)
+        self.line1.addItems(self.v_list[::-1])
+        self.line1.show()             
 
 
     def LoadFile(self):
