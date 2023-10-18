@@ -236,7 +236,7 @@ class MyTabWidget(QWidget):
 		y = eigVec[:,ev2]/eigVec[:,0]
 		import matplotlib.pyplot as plt
 		fig,ax1 = plt.subplots(1,1)
-		fig.set_size_inches(8,6)
+		fig.set_size_inches(5,4)
 		sc1 = ax1.scatter(x,y,c='k',s=5)
 		my_xlabel = '$\Psi_'+str(ev1)+'$'
 		my_ylabel = '$\Psi_'+str(ev2)+'$'
@@ -248,12 +248,15 @@ class MyTabWidget(QWidget):
 
 		self.tab2 = QWidget()
 		label = QLabel(self.tab2)
-		layout = QVBoxLayout()
+		label.setGeometry(240,0,500,400)
+	#	layout = QGridLayout()
 		pixmap = QPixmap('diffmap_2D.jpg')
 		label.setPixmap(pixmap)
-
-		layout.addWidget(label)
-		self.tab2.setLayout(layout)
+	#	label.move(500,0)
+	#	layout.addWidget(label,10,2)
+	#	self.tab2.setLayout(layout)
+		label.show()
+#		self.setCentralWidget(self.tab2)
 
 		self.tabs.addTab(self.tab2, "Manifold")
 
@@ -261,22 +264,6 @@ class MyTabWidget(QWidget):
 #            w.label = QLabel(self)
 #            pixmap = QPixmap('diffmap_2D_psi_1_2_psi_1_colored.jpg')
 #            w.label.setPixmap(pixmap)
-
-			
-class AnotherWindow(QWidget):
-	"""
-	This "window" is a QWidget. If it has no parent, it
-	will appear as a free-floating window as we want.
-	"""
-	def __init__(self):
-		super().__init__()
-		self.label = QLabel(self)
-		layout = QVBoxLayout()
-		pixmap = QPixmap('diffmap_2D.jpg')
-		self.label.setPixmap(pixmap)
-
-		layout.addWidget(self.label)
-		self.setLayout(layout)
 
 
 
