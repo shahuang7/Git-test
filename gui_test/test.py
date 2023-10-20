@@ -32,8 +32,10 @@ class MyTabWidget(QWidget):
 	def __init__(self, parent):
 		super(QWidget, self).__init__(parent)
 		self.layout = QVBoxLayout(self)
-		self.tabs = QTabWidget() 
-
+		self.tabs = QTabWidget(self,tabShape=QTabWidget.TabShape.Rounded) 
+		self.tabs.setTabsClosable(True)
+		self.tabs.tabCloseRequested.connect(self.close_current_tab)
+		self.tabs.setMovable(True)
 		# First tab : main 
 		self.tab1 = QWidget()
 #		self.resize(900,400)
@@ -48,8 +50,15 @@ class MyTabWidget(QWidget):
 		self.parameter_box("Nearest Neighbour:",10,170,140,30)
 		self.parameter_box("Sigma Factor:",10,210,110,30)
 		self.parameter_box("nEigs:",10,250,60,30)
-		self.checkbox_transpose = QCheckBox(self.tab1)
-		self.checkbox_transpose.setGeometry(160,130,60,30)
+		self.checkbox_transpose_true = QCheckBox(self.tab1)
+		self.checkbox_transpose_true.setGeometry(160,130,60,30)
+		self.checkbox_transpose_true.setText("True")
+		self.checkbox_transpose_false = QCheckBox(self.tab1)
+		self.checkbox_transpose_false.setGeometry(250,130,60,30)
+		self.checkbox_transpose_false.setText("False")
+		self.checkbox_transpose_true.stateChanged.connect(self.transpose_uncheck)
+		self.checkbox_transpose_false.stateChanged.connect(self.transpose_uncheck)
+
 		self.line4 = QLineEdit("",self.tab1)
 		self.line4.setGeometry(160,170,60,30)
 		self.line5 = QLineEdit("",self.tab1)
@@ -85,17 +94,38 @@ class MyTabWidget(QWidget):
 			button_variable.setGeometry(10,90,110,30)
 			button_variable.clicked.connect(self.pulldown_v)
 			button_variable.show()
-			self.checkbox_h5 = QCheckBox(self.tab1)
-			self.checkbox_h5.setGeometry(160,50,60,30)
-			self.checkbox_h5.show()
+			self.checkbox_h5_true = QCheckBox(self.tab1)
+			self.checkbox_h5_false = QCheckBox(self.tab1)
+			self.checkbox_h5_true.setGeometry(160,50,60,30)
+			self.checkbox_h5_false.setGeometry(250,50,60,30)
+			self.checkbox_h5_true.setText("True")
+			self.checkbox_h5_false.setText("False")
+			self.checkbox_h5_true.show()
+			self.checkbox_h5_false.show()
+			self.checkbox_h5_true.stateChanged.connect(self.h5_uncheck)
+			self.checkbox_h5_false.stateChanged.connect(self.h5_uncheck)
+
+	def h5_uncheck(self,state):
+		if state == Qt.Checked:
+			if self.sender() == self.checkbox_h5_true:
+				self.checkbox_h5_false.setChecked(False)
+			elif self.sender() == self.checkbox_h5_false:
+				self.checkbox_h5_true.setChecked(False)
+
+	def transpose_uncheck(self,state):
+		if state == Qt.Checked:
+			if self.sender() == self.checkbox_transpose_true:
+				self.checkbox_transpose_false.setChecked(False)
+			elif self.sender() == self.checkbox_transpose_false:
+				self.checkbox_transpose_true.setChecked(False)
 	
 	def pulldown_v(self):
-		if self.checkbox_h5.isChecked():
+		if self.checkbox_h5_true.isChecked():
 			import h5py
 			import numpy as np
 			f = h5py.File(self.file_path,'r')
 			self.v_list = list(f.keys())
-		else:
+		elif self.checkbox_h5_false.isChecked():
 			from scipy.io import loadmat
 			f = loadmat(str(self.file_path))
 			self.v_list = list(f.keys()) 
@@ -150,8 +180,8 @@ class MyTabWidget(QWidget):
 	def click_save(self):
 ##            global v_name,nN,sigfac
 #        self.v_name = str(self.line1.text())
-		self.h5 = self.checkbox_h5.isChecked()
-		self.transpose = self.checkbox_transpose.isChecked()
+		self.h5 = self.checkbox_h5_true.isChecked()
+		self.transpose = self.checkbox_transpose_true.isChecked()
 		self.nN = int(self.line4.text())
 		self.sigfac = float(self.line5.text())
 		self.nEigs = int(self.line6.text()) 
@@ -264,6 +294,17 @@ class MyTabWidget(QWidget):
 #            w.label = QLabel(self)
 #            pixmap = QPixmap('diffmap_2D_psi_1_2_psi_1_colored.jpg')
 #            w.label.setPixmap(pixmap)
+
+	def close_current_tab(self, i):
+
+		# if there is only one tab
+		if self.tabs.count() < 2:
+			# do nothing
+			super(QWidget).close()
+			return
+
+		# else remove the tab
+		self.tabs.removeTab(i)
 
 
 
