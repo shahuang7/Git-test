@@ -270,16 +270,16 @@ class MyTabWidget(QWidget):
 		write_h5(yRow_yCol_yVal_file,yCol_symm,'yCol')
 		write_h5(yRow_yCol_yVal_file,yVal_symm,'yVal')
 
-		label = QLabel("sqDist Done",self.tab1)
-		label.setGeometry(500,140,100,30)
-		label.show()
+		#label = QLabel("sqDist Done",self.tab1)
+		#label.setGeometry(500,140,100,30)
+		#label.show()
 
 		from ferguson import analyze as fer_ana
 
 		sigma_opt,_ = fer_ana(yRow_yCol_yVal_file)
-		label = QLabel("Ferguson Analysis Done",self.tab1)
-		label.setGeometry(500,180,200,30)
-		label.show()
+		#label = QLabel("Ferguson Analysis Done",self.tab1)
+		#label.setGeometry(500,180,200,30)
+		#label.show()
 
 		from diffmap import analyze as diff_ana
 		from diffmap import plot2D
@@ -287,22 +287,22 @@ class MyTabWidget(QWidget):
 		self.h5_eigVec_eigVal = diff_ana(yRow_yCol_yVal_file,sigma,nEigs,alpha)
 		
 	 
-		label = QLabel("Diffuion map analysis Done",self.tab1)
-		label.setGeometry(500,220,200,30)
-		label.show() 
+		#label = QLabel("Diffuion map analysis Done",self.tab1)
+		#label.setGeometry(500,220,200,30)
+		#label.show() 
 
 		self.line_eigv1 = QLineEdit("",self.tab1)
 		self.line_eigv1.setGeometry(500,325,40,25)
 		self.line_eigv1.show()
-		self.parameter_box("Eigen Vector Index 1: ",360,320,130,30)
+		self.parameter_box("Eigenvector Index 1: ",360,320,130,30)
 		self.line_eigv2 = QLineEdit("",self.tab1)
 		self.line_eigv2.setGeometry(500,365,40,25)
 		self.line_eigv2.show()
-		self.parameter_box("Eigen Vector Index 2: ",360,360,130,30)
+		self.parameter_box("Eigenvector Index 2: ",360,360,130,30)
 		self.line_eigv3 = QLineEdit("",self.tab1)
 		self.line_eigv3.setGeometry(500,405,40,25)
 		self.line_eigv3.show()
-		self.parameter_box("Eigen Vector Index 3: ",360,400,130,30)
+		self.parameter_box("Eigenvector Index 3: ",360,400,130,30)
 #        for j in [1]:
   # colored based on \psi_j
 #            write_h5('colorcode.h5',eigVec[:,j]/eigVec[:,0],'colorcode')
@@ -319,10 +319,15 @@ class MyTabWidget(QWidget):
 		plot_button_3d.clicked.connect(self.plot_3d)
 		plot_button_3d.show()
 
-		plot_button_eigVal = QPushButton("Eigen Value",self.tab1)
+		plot_button_eigVal = QPushButton("Eigenvalue",self.tab1)
 		plot_button_eigVal.setGeometry(700,400,150,30)
 		plot_button_eigVal.clicked.connect(self.plot_eigVal)
 		plot_button_eigVal.show()	
+
+		plot_button_ferg= QPushButton("Ferguson Result",self.tab1)
+		plot_button_ferg.setGeometry(700,440,150,30)
+		plot_button_ferg.clicked.connect(self.plot_fergurson)
+		plot_button_ferg.show()	
 
 	def plot_eigVal(self):
 		eigVal = read_h5(self.h5_eigVec_eigVal,'eigVal')
@@ -330,7 +335,8 @@ class MyTabWidget(QWidget):
 		fig,ax1 = plt.subplots(1,1)
 		fig.set_size_inches(5,4)
 		ax1.scatter(np.arange(1,11),eigVal[1:11])
-		ax1.set_ylabel("EigenValue",fontsize=15)
+		ax1.set_ylabel("Eigenvalue",fontsize=15)
+		ax1.set_ylabel("Eigenvector",fontsize=15)
 		figure_name = 'eigVal.jpg'
 		plt.savefig(figure_name,bbox_inches='tight')
 
@@ -359,8 +365,8 @@ class MyTabWidget(QWidget):
 		fig,ax1 = plt.subplots(1,1)
 		fig.set_size_inches(5,4)
 		sc1 = ax1.scatter(x,y,c='k',s=5)
-		my_xlabel = '$\Psi_'+str(ev1)+'$'
-		my_ylabel = '$\Psi_'+str(ev2)+'$'
+		my_xlabel = 'Eigenvector '+str(ev1)
+		my_ylabel = 'Eigenvector '+str(ev2)
 		ax1.set_xlabel(my_xlabel,fontsize=15)
 		ax1.set_ylabel(my_ylabel,fontsize=15)
 		ax1.set_aspect('equal','box')
@@ -383,7 +389,6 @@ class MyTabWidget(QWidget):
 
 	def plot_3d(self):
 		eigVec = read_h5(self.h5_eigVec_eigVal,'eigVec')
-		eigVal = read_h5(self.h5_eigVec_eigVal,'eigVal')
 		ev1 = int(self.line_eigv1.text())
 		ev2 = int(self.line_eigv2.text())
 		ev3 = int(self.line_eigv3.text())
@@ -393,21 +398,21 @@ class MyTabWidget(QWidget):
 		import matplotlib.pyplot as plt
 		fig = plt.figure()
 		ax1 = fig.add_subplot(projection='3d')
-		fig.set_size_inches(5,4)
+		fig.set_size_inches(7,5)
 		sc1 = ax1.scatter(x,y,z,c='k',s=5)
-		my_xlabel = '$\Psi_'+str(ev1)+'$'
-		my_ylabel = '$\Psi_'+str(ev2)+'$'
-		my_zlabel = '$\Psi_'+str(ev3)+'$'
+		my_xlabel = 'Eigenvector '+str(ev1)
+		my_ylabel = 'Eigenvector '+str(ev2)
+		my_zlabel = 'Eigenvector '+str(ev3)
 		ax1.set_xlabel(my_xlabel,fontsize=15)
 		ax1.set_ylabel(my_ylabel,fontsize=15)
 		ax1.set_zlabel(my_zlabel,fontsize=15)
 		ax1.set_aspect('equal','box')
 		figure_name = 'diffmap_3D.jpg'
-		plt.savefig(figure_name,bbox_inches='tight')
+		plt.savefig(figure_name)
 
 		self.tab2 = QWidget()
 		label = QLabel(self.tab2)
-		label.setGeometry(240,0,500,400)
+		label.setGeometry(100,0,700,480)
 	#	layout = QGridLayout()
 		pixmap = QPixmap('diffmap_3D.jpg')
 		label.setPixmap(pixmap)
@@ -418,6 +423,20 @@ class MyTabWidget(QWidget):
 #		self.setCentralWidget(self.tab2)
 
 		self.tabs.addTab(self.tab2, "3D Manifold")
+
+	def plot_fergurson(self):
+		self.tab2 = QWidget()
+		label = QLabel(self.tab2)
+		label.setGeometry(100,20,700,480)
+	#	layout = QGridLayout()
+		pixmap = QPixmap('ferguson.jpg').scaled(700,480)
+		label.setPixmap(pixmap)
+	#	label.move(500,0)
+	#	layout.addWidget(label,10,2)
+	#	self.tab2.setLayout(layout)
+		label.show()
+		self.tabs.addTab(self.tab2, "Ferguson Result")
+#		self.setCentralWidget(self.tab2)
 
 
 #            w.label = QLabel(self)
