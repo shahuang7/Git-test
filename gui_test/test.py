@@ -12,6 +12,11 @@ startup_file = cxfel_root+'/misc_tools/startup.py'
 exec(open(startup_file).read())
 from misc_tools import read_h5
 
+class Stream(QObject):
+	newtext = pyqtSignal(str)
+
+	def write(self,text):
+		self.newtext.emit(str(text))
 
 # The Overall Window
 class Window(QMainWindow): 
@@ -26,8 +31,15 @@ class Window(QMainWindow):
 		self.setGeometry(200, 200, 900, 550) 
 		self.tab_widget = MyTabWidget(self) 
 		self.setCentralWidget(self.tab_widget) 
-
+		
 		self.show()
+	
+	def closeEvent(self, event):
+		"""Shuts down application on close."""
+		# Return stdout to defaults.
+		sys.stdout = sys.__stdout__
+		super().closeEvent(event)
+
 
 # Tabs 
 class MyTabWidget(QWidget):
@@ -79,15 +91,32 @@ class MyTabWidget(QWidget):
 		self.save_variable()
 		self.run_button()
 
+		self.process = QTextEdit(self, readOnly=True)
+		self.process.ensureCursorVisible()
+		self.process.setLineWrapColumnOrWidth(500)
+		self.process.setLineWrapMode(QTextEdit.FixedPixelWidth)
+		self.process.setFixedWidth(400)
+		self.process.setFixedHeight(200)
+		self.process.move(500, 60)		
+
+		sys.stdout = Stream(newtext=self.onUpdateText)
+
 	#	self.tab1.layout.addWidget(p1)
 	#	self.tab1.layout.addWidget(p2)
 	#	self.tab1.layout.addWidget(p3)
 	#	self.tab1.layout.addWidget(p4)
 	#	self.tab1.setLayout(self.tab1.layout) 
-
 		self.tabs.addTab(self.tab1, "Main")
 		self.layout.addWidget(self.tabs) 
 		self.setLayout(self.layout) 
+
+	def onUpdateText(self, text):
+		"""Write console output to text widget."""
+		cursor = self.process.textCursor()
+		cursor.movePosition(QTextCursor.End)
+		cursor.insertText(text)
+		self.process.setTextCursor(cursor)
+		self.process.ensureCursorVisible()
 
 	def ssh_widget(self):
 		host_label = QLabel("Host:",self.tab1)
@@ -137,7 +166,7 @@ class MyTabWidget(QWidget):
 	def open_dialog(self):
 		options = QFileDialog.Options()
 		runPath = "/home/hui/Git-test/gui_test/"
-		print(runPath)
+	#	print(runPath)
 		fileName, _ = QFileDialog.getOpenFileName(self.tab1,"Open Dialogue", runPath, "All Files (*);;Python Files (*.py);;Image Files (*jpeg, *.png)", options=options)
 		if fileName:
 			print('Data file ' + fileName + ' is selected')
@@ -239,7 +268,7 @@ class MyTabWidget(QWidget):
 		self.sigfac = float(self.line5.text())
 		self.nEigs = int(self.line6.text()) 
 		self.v_name = self.line1.currentText()  
-#        print(self.v_name,self.nN,self.sigfac,self.file_path)
+		print(self.v_name,self.nN,self.sigfac,self.file_path)
 
 #    def check_h5(self,checked):
 #        if checked:
@@ -269,10 +298,11 @@ class MyTabWidget(QWidget):
 		write_h5(yRow_yCol_yVal_file,yRow_symm,'yRow')
 		write_h5(yRow_yCol_yVal_file,yCol_symm,'yCol')
 		write_h5(yRow_yCol_yVal_file,yVal_symm,'yVal')
-
+		print('sqDist Done')
 		#label = QLabel("sqDist Done",self.tab1)
 		#label.setGeometry(500,140,100,30)
 		#label.show()
+		
 
 		from ferguson import analyze as fer_ana
 
@@ -280,12 +310,13 @@ class MyTabWidget(QWidget):
 		#label = QLabel("Ferguson Analysis Done",self.tab1)
 		#label.setGeometry(500,180,200,30)
 		#label.show()
+		print('Ferguson Done')
 
 		from diffmap import analyze as diff_ana
 		from diffmap import plot2D
 		sigma = sigma_factor*sigma_opt
 		self.h5_eigVec_eigVal = diff_ana(yRow_yCol_yVal_file,sigma,nEigs,alpha)
-		
+		print('Diffusion Map Done')
 	 
 		#label = QLabel("Diffuion map analysis Done",self.tab1)
 		#label.setGeometry(500,220,200,30)
