@@ -27,7 +27,7 @@ Calculated squared distances between snapshots and projected onto diffusion map 
 
 \noindent Tested above process in both single node and MPI.
 
-\noindent \textcolor{red}{Need to double check the results, i.e. chronos, to make this a benchmark to evaluate further test in the future}
+\noindent Finished a python master code, tested it with CroV data and successfully reproduced results of manifolds and chronos.
 
 \subsection*{PYP Crystallography - Ongoing}
 Using SnA method to caluclate squared distance
@@ -53,6 +53,7 @@ Concatenate pipe files - Errors: Using numpy to initiate a 70Kx70K 2D array exce
 
 \noindent With octave calling all python libraries, the code can run without bugs, but the result chrono seems off. Need to look into the transition between matlab and python code.
 
+\noindent \textcolor{red}{Test PYP data with new python master code, tuning different parameters, i.e. sigma factor, nearest neighbour}
 \subsection*{GUI design - Ongoing}
 A first version of quick and dirty GUI is done for diffusion map, details are going to be discussed.
 
@@ -60,7 +61,9 @@ A first version of quick and dirty GUI is done for diffusion map, details are go
 
 \noindent {Looking to add following new features to the GUI: Checkbox with true or false options (Done), tab close options (Done), displaying eigenvalues (Done), ssh connections (No need currently).}
 
-\noindent \textcolor{red}{Add console window for the GUI, implement full NLSA functions.}
+\noindent {Added console window for the GUI, opened GUI on a remote server}
+
+\noindent \textcolor{red}{Implement the new python master code with NLSA function to GUI as a backstage code.}
 \section*{Research Projects with Existing Code}
 \subsection*{Data Incompleteness/Partiallity with NLSA Method}
 Ongoing
